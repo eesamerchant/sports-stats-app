@@ -4,6 +4,7 @@ import Link from "next/link";
 import { isMasterAdmin, isLeagueAdmin } from "@/lib/auth-helpers";
 import { GameCsvUploader } from "@/components/game-csv-uploader";
 import { ManagerPermissions } from "@/components/manager-permissions";
+import LeagueProfileEditor from "@/components/league-profile-editor";
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -377,6 +378,29 @@ export default async function LeagueAdminPage({
         <ManagerPermissions leagueId={id} initialPermissions={permissions} />
       </section>
 
+      {/* League Profile & Settings */}
+      <section className="rounded-lg border border-border bg-card p-6 space-y-4">
+        <div>
+          <h2 className="text-lg font-semibold mb-1">League Profile & Settings</h2>
+          <p className="text-sm text-muted-foreground">
+            Customize your league&apos;s profile, social links, and join permissions.
+          </p>
+        </div>
+        <LeagueProfileEditor
+          leagueId={id}
+          initialData={{
+            logo_url: league.logo_url ?? null,
+            website: league.website ?? null,
+            social_facebook: league.social_facebook ?? null,
+            social_instagram: league.social_instagram ?? null,
+            social_twitter: league.social_twitter ?? null,
+            social_tiktok: league.social_tiktok ?? null,
+            join_mode: league.join_mode ?? "open",
+          }}
+          supabaseUrl={process.env.NEXT_PUBLIC_SUPABASE_URL!}
+        />
+      </section>
+
       {/* Admin Actions */}
       <section className="rounded-lg border border-border bg-card p-6 space-y-4">
         <h2 className="text-lg font-semibold">Quick Actions</h2>
@@ -410,6 +434,14 @@ export default async function LeagueAdminPage({
             className="flex items-center justify-between rounded-md border border-border bg-secondary/20 px-4 py-3 hover:bg-secondary/40 transition"
           >
             <span className="text-sm font-medium">Calendar View</span>
+            <span className="text-xs text-muted-foreground">→</span>
+          </Link>
+
+          <Link
+            href={`/leagues/${id}/standings`}
+            className="flex items-center justify-between rounded-md border border-border bg-secondary/20 px-4 py-3 hover:bg-secondary/40 transition"
+          >
+            <span className="text-sm font-medium">Standings</span>
             <span className="text-xs text-muted-foreground">→</span>
           </Link>
         </div>

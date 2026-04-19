@@ -38,6 +38,8 @@ export type Player = {
   updated_at: string;
 };
 
+export type JoinMode = "open" | "admin_approval" | "manager_approval" | "invite_only";
+
 export type League = {
   id: string;
   owner_id: string;
@@ -48,6 +50,23 @@ export type League = {
   status: LeagueStatus;
   description: string | null;
   schedule_published: boolean;
+  logo_url: string | null;
+  website: string | null;
+  social_facebook: string | null;
+  social_instagram: string | null;
+  social_twitter: string | null;
+  social_tiktok: string | null;
+  join_mode: JoinMode;
+  created_at: string;
+  updated_at: string;
+};
+
+export type LeagueJoinRequest = {
+  id: string;
+  league_id: string;
+  player_id: string;
+  status: "pending" | "approved" | "rejected";
+  reviewed_by: string | null;
   created_at: string;
   updated_at: string;
 };
@@ -267,6 +286,17 @@ export type Database = {
           updated_at?: string;
         };
         Update: Partial<Omit<LeagueManagerPermissions, "id" | "created_at">>;
+      };
+      league_join_requests: {
+        Row: LeagueJoinRequest;
+        Insert: Omit<LeagueJoinRequest, "id" | "created_at" | "updated_at" | "status" | "reviewed_by"> & {
+          id?: string;
+          status?: "pending" | "approved" | "rejected";
+          reviewed_by?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<Omit<LeagueJoinRequest, "id" | "created_at">>;
       };
       admin_audit: {
         Row: {

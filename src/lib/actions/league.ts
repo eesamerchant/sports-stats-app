@@ -100,26 +100,87 @@ export async function joinLeagueByCode(
     return { error: "Enter a valid 6-character join code." };
   }
 
-  const { data, error } = await supabase.rpc("join_league_by_code", {
-    p_code: code,
-  });
-
-  if (error) {
-    return { error: error.message };
-  }
-
-  // Find the league from the code to redirect
+  // First check the league's join mode
   const { data: league } = await supabase
     .from("leagues")
-    .select("id")
+    .select("id, join_mode, owner_id")
     .eq("join_code", code)
     .single();
 
-  if (league) {
+  if (!league) {
+    return { error: "Invalid join code. No league found." };
+  }
+
+  // Get the player profile
+  const { data: player } = await supabase
+    .from("players")
+    .select("id")
+    .eq("user_id", user.id)
+    .single();
+
+  if (!player) {
+    return { error: "Please complete your player profile first." };
+  }
+
+  // Check if already a member
+  const { data: existingMembership } = await supabase
+    .from("league_memberships")
+    .select("id")
+    .eq("league_id", league.id)
+    .eq("player_id", player.id)
+    .is("left_at", null)
+    .single();
+
+  if (existingMembership) {
     redirect(`/leagues/${league.id}`);
   }
 
-  redirect("/dashboard");
+  const joinMode = league.join_mode ?? "open";
+
+  if (joinMode === "open") {
+    // Direct join via RPC
+    const { error } = await supabase.rpc("join_league_by_code", {
+      p_code: code,
+    });
+
+    if (error) {
+      return { error: error.message };
+    }
+
+    redirect(`/leagues/${league.id}`);
+  } else if (joinMode === "invite_only") {
+    return { error: "This league is invite-only. Ask the league admin for a direct invite." };
+  } else {
+    // admin_approval or manager_approval — create a join request
+    const { data: existingRequest } = await supabase
+      .from("league_join_requests")
+      .select("id, status")
+      .eq("league_id", league.id)
+      .eq("player_id", player.id)
+      .single();
+
+    if (existingRequest) {
+      if (existingRequest.status === "pending") {
+        return { error: "Your join request is already pending. Please wait for approval." };
+      } else if (existingRequest.status === "rejected") {
+        // Allow re-requesting after rejection
+        await supabase
+          .from("league_join_requests")
+          .update({ status: "pending", updated_at: new Date().toISOString() })
+          .eq("id", existingRequest.id);
+        return { error: "Your join request has been resubmitted for approval." };
+      }
+    } else {
+      await supabase
+        .from("league_join_requests")
+        .insert({
+          league_id: league.id,
+          player_id: player.id,
+        });
+    }
+
+    return { error: "Join request submitted! The league admin will review your request." };
+  }
 }
 
 export async function updateLeague(

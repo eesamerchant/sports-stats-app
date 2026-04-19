@@ -94,17 +94,54 @@ export default async function LeaguePage({
     <main className="container py-8 space-y-8">
       {/* League header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold">{league.name}</h1>
-          <p className="text-sm text-muted-foreground">
-            {league.sport} {league.season ? `· ${league.season}` : ""} ·{" "}
-            <span className="capitalize">{league.status}</span>
-          </p>
-          {league.description && (
-            <p className="mt-1 text-sm text-muted-foreground">
-              {league.description}
-            </p>
+        <div className="flex items-start gap-4">
+          {league.logo_url && (
+            <img
+              src={league.logo_url}
+              alt={league.name}
+              className="h-16 w-16 rounded-lg object-cover border border-border"
+            />
           )}
+          <div>
+            <h1 className="text-2xl font-bold">{league.name}</h1>
+            <p className="text-sm text-muted-foreground">
+              {league.sport} {league.season ? `· ${league.season}` : ""} ·{" "}
+              <span className="capitalize">{league.status}</span>
+            </p>
+            {league.description && (
+              <p className="mt-1 text-sm text-muted-foreground">
+                {league.description}
+              </p>
+            )}
+            {/* Social links */}
+            <div className="flex flex-wrap gap-3 mt-2">
+              {league.website && (
+                <a href={league.website} target="_blank" rel="noopener noreferrer" className="text-xs text-primary hover:underline">
+                  Website
+                </a>
+              )}
+              {league.social_facebook && (
+                <a href={`https://facebook.com/${league.social_facebook}`} target="_blank" rel="noopener noreferrer" className="text-xs text-primary hover:underline">
+                  Facebook
+                </a>
+              )}
+              {league.social_instagram && (
+                <a href={`https://instagram.com/${league.social_instagram.replace("@", "")}`} target="_blank" rel="noopener noreferrer" className="text-xs text-primary hover:underline">
+                  Instagram
+                </a>
+              )}
+              {league.social_twitter && (
+                <a href={`https://x.com/${league.social_twitter.replace("@", "")}`} target="_blank" rel="noopener noreferrer" className="text-xs text-primary hover:underline">
+                  X/Twitter
+                </a>
+              )}
+              {league.social_tiktok && (
+                <a href={`https://tiktok.com/${league.social_tiktok.replace("@", "")}`} target="_blank" rel="noopener noreferrer" className="text-xs text-primary hover:underline">
+                  TikTok
+                </a>
+              )}
+            </div>
+          </div>
         </div>
 
         <div className="flex flex-col sm:items-end gap-2">
@@ -138,6 +175,12 @@ export default async function LeaguePage({
                   </Link>
                 </>
               )}
+              <Link
+                href={`/leagues/${id}/standings`}
+                className="rounded-md border border-border px-4 py-2 text-sm font-medium hover:bg-accent transition text-center"
+              >
+                Standings
+              </Link>
               <Link
                 href={`/leagues/${id}/calendar`}
                 className="rounded-md border border-border px-4 py-2 text-sm font-medium hover:bg-accent transition text-center"
