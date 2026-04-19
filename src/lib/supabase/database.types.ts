@@ -6,7 +6,7 @@ export type Json =
   | { [key: string]: Json | undefined }
   | Json[];
 
-export type SportKind = "softball" | "baseball" | "basketball";
+export type SportKind = "softball" | "baseball" | "basketball" | "soccer" | "cricket" | "pickleball";
 export type LeagueStatus = "draft" | "active" | "archived";
 export type LeagueRole = "player" | "captain" | "scorer" | "manager";
 export type GameStatus = "scheduled" | "live" | "final" | "voided";

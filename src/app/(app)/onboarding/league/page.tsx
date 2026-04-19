@@ -45,9 +45,13 @@ export default function OnboardingLeaguePage() {
               required
               className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
             >
+              <option value="">Select a sport...</option>
               <option value="softball">Softball</option>
               <option value="baseball">Baseball</option>
               <option value="basketball">Basketball</option>
+              <option value="soccer">Soccer</option>
+              <option value="cricket">Cricket</option>
+              <option value="pickleball">Pickleball</option>
             </select>
           </div>
 

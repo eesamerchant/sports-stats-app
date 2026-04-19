@@ -6,7 +6,7 @@ import { z } from "zod";
 
 const CreateLeagueSchema = z.object({
   name: z.string().min(1).max(100),
-  sport: z.enum(["softball", "baseball", "basketball"]),
+  sport: z.enum(["softball", "baseball", "basketball", "soccer", "cricket", "pickleball"]),
   season: z.string().max(50).optional(),
   description: z.string().max(500).optional(),
 });

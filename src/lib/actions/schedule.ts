@@ -29,18 +29,27 @@ export async function bulkCreateGames(
   } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
-  const rows = games.map((g) => ({
-    league_id: leagueId,
-    game_date: g.game_date,
-    start_time: g.start_time ?? null,
-    home_team: g.home_team,
-    away_team: g.away_team,
-    notes: g.notes ?? null,
-    field_name: g.field_name ?? null,
-    location: g.location ?? null,
-    duration_minutes: g.duration_minutes ?? null,
-    created_by: user.id,
-  }));
+  const rows = games.map((g) => {
+    // Combine game_date + start_time into a proper timestamptz if start_time is a plain time string like "18:00"
+    let startTimeValue: string | null = g.start_time ?? null;
+    if (startTimeValue && !startTimeValue.includes("T") && !startTimeValue.includes("-")) {
+      // It's a plain time like "18:00" — combine with game_date to form a full timestamp
+      startTimeValue = `${g.game_date}T${startTimeValue}:00`;
+    }
+
+    return {
+      league_id: leagueId,
+      game_date: g.game_date,
+      start_time: startTimeValue,
+      home_team: g.home_team,
+      away_team: g.away_team,
+      notes: g.notes ?? null,
+      field_name: g.field_name ?? null,
+      location: g.location ?? null,
+      duration_minutes: g.duration_minutes ?? null,
+      created_by: user.id,
+    };
+  });
 
   const { error } = await supabase.from("games").insert(rows);
   if (error) return { error: error.message };
