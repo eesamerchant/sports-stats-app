@@ -86,12 +86,19 @@ export default function LoginPage() {
           </button>
         </form>
 
-        <p className="text-center text-sm text-muted-foreground">
-          Don&apos;t have an account?{" "}
-          <Link href="/signup?role=player" className="font-medium underline">
-            Sign up
-          </Link>
-        </p>
+        <div className="text-center space-y-2">
+          <p className="text-sm text-muted-foreground">
+            <Link href="/forgot-password" className="font-medium underline">
+              Forgot your password?
+            </Link>
+          </p>
+          <p className="text-sm text-muted-foreground">
+            Don&apos;t have an account?{" "}
+            <Link href="/signup?role=player" className="font-medium underline">
+              Sign up
+            </Link>
+          </p>
+        </div>
       </div>
     </main>
   );
